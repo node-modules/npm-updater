@@ -2,7 +2,6 @@ npm-updater
 ---------------
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
 [![node version][node-image]][node-url]
 
 [npm-image]: https://img.shields.io/npm/v/npm-updater.svg?style=flat-square
