@@ -105,13 +105,13 @@ function notify (version, level, options) {
   level = LEVEL_MAP[level]
 
   if (options.abort && level >= LEVEL_MAP[options.level]) {
-    var msg = fmt('[npm-updater] %s 的最新版本为 %s，与本地版本 %s 不兼容，请升级后使用。\n%s',
+    var msg = fmt('[%s版本升级提示] 最新版本为 %s，与本地版本 %s 不兼容，请升级后使用。\n%s',
       options.name, version, options.version, options.updateMessage)
     console.error(red(msg))
     process.exit(1)
   }
 
-  var msg = fmt('[npm-updater] %s 的最新版本为 %s，本地版本为 %s，请尽快升级到最新版本。\n%s',
+  var msg = fmt('[%s 版本升级提示] 最新版本为 %s，本地版本为 %s，请尽快升级到最新版本。\n%s',
     options.name, version, options.version, options.updateMessage)
   return console.warn(yellow(msg))
 }

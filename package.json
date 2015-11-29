@@ -31,8 +31,12 @@
     "semver": "~5.1.0",
     "urllib": "~2.5.0"
   },
+  "git-pre-hooks": {
+    "post-release": "npm publish && tnpm sync --no-deps"
+  },
   "devDependencies": {
-    "autod": "2"
+    "autod": "2",
+    "git-pre-hooks": "1"
   },
   "engine": {
     "node": ">=0.10"
