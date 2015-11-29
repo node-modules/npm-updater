@@ -1,5 +1,10 @@
 
-1.0.2 / 2015-11-29 
+1.1.0 / 2015-11-30
+==================
+
+  * feat: support pass package object
+
+1.0.2 / 2015-11-29
 ==================
 
   * fix: need notify when version conflict
