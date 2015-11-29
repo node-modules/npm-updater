@@ -32,7 +32,7 @@
     "urllib": "~2.5.0"
   },
   "git-pre-hooks": {
-    "post-release": "npm publish && tnpm sync --no-deps"
+    "post-release": ["npm publish", "tnpm sync --no-deps"]
   },
   "devDependencies": {
     "autod": "2",

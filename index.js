@@ -76,7 +76,6 @@ function getRemoteUrl (options) {
 }
 
 function verifyVersion (version, options) {
-  if (!needNotify(version, options)) return
   if (semver.gtr(version, '^' + options.version)) {
     return notify(version, 'major', options)
   }
@@ -90,17 +89,8 @@ function verifyVersion (version, options) {
   }
 }
 
-function needNotify (version, options) {
-  if (!conf[options.name] || !conf[options.name][version]) return true
-
-  var last = conf[options.name][version]
-  return Date.now() - last > options.interval
-}
-
-
 function notify (version, level, options) {
   debug('notify for remote version: %s, notify level: %s', version, level)
-  updateDotConfig(version, options)
 
   level = LEVEL_MAP[level]
 
@@ -111,9 +101,18 @@ function notify (version, level, options) {
     process.exit(1)
   }
 
+  if (!needNotify(version, options)) return
+  updateDotConfig(version, options)
   var msg = fmt('[%s 版本升级提示] 最新版本为 %s，本地版本为 %s，请尽快升级到最新版本。\n%s',
     options.name, version, options.version, options.updateMessage)
   return console.warn(yellow(msg))
+}
+
+function needNotify (version, options) {
+  if (!conf[options.name] || !conf[options.name][version]) return true
+
+  var last = conf[options.name][version]
+  return Date.now() - last > options.interval
 }
 
 function updateDotConfig (version, options) {
