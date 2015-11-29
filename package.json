@@ -1,6 +1,6 @@
 {
   "name": "npm-updater",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Prompt update of npm package",
   "main": "index.js",
   "scripts": {
