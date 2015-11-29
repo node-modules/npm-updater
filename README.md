@@ -22,11 +22,15 @@ $ npm install npm-updater
 ```js
 var updater = require('npm-updater')
 
-updater({ level: 'major' }).then(execCommands)
+updater({
+  package: require('./package.json'),
+  level: 'major'
+}).then(execCommands)
 ```
 
 ### Options
 
+- `package`: pass module's `package.json` object, default will try to get from `../../package.json`.
 - `registry`: support customize registry, default get `publishConfig.registry` from parent package.
 - `name`: package name, default get from parent package.
 - `version`: pkg version,default get from parent package.

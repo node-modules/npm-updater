@@ -21,19 +21,7 @@ var fs = require('fs')
 
 var conf = config.get()
 
-// get package info from parent package
-var packgePath = path.join(__dirname, '../../package.json')
-var pkg = {}
-try {
-  pkg = require(packgePath)
-} catch (err) {
-  debug('read package %s error: %S', packgePath, err.stack)
-}
-
 var DEFAULT_OPTIONS = {
-  registry: (pkg.publishConfig && pkg.publishConfig.registry) || 'http://registry.npmjs.com',
-  name: pkg.name,
-  version: pkg.version,
   abort: true,
   level: 'minor',
   tag: 'latest',
@@ -47,10 +35,18 @@ var LEVEL_MAP = {
   patch: 0
 }
 
+var DEFAULT_REGISTRY = 'http://registry.npmjs.com'
+
 module.exports = function (customOptions) {
   customOptions = customOptions || {}
   var options = {}
   copy(customOptions).and(DEFAULT_OPTIONS).to(options)
+
+  var pkg = options.package || getDefaultPackage()
+  options.name = options.name || pkg.name
+  options.version = options.version || pkg.version
+  options.registry = options.registry || (pkg.publishConfig && pkg.publishConfig.registry) || DEFAULT_REGISTRY
+
   debug('get options %j', options)
   assert(options.name && options.version, '`options.name` and `options.version` are required and can not get from package')
   options.registry = options.registry.replace(/\/?$/, '/')
@@ -101,7 +97,7 @@ function notify (version, level, options) {
     process.exit(1)
   }
 
-  if (!needNotify(version, options)) return
+  if (!needNotify(version, options)) return debug('间隔时间内，不需要提示')
   updateDotConfig(version, options)
   var msg = fmt('[%s 版本升级提示] 最新版本为 %s，本地版本为 %s，请尽快升级到最新版本。\n%s',
     options.name, version, options.version, options.updateMessage)
@@ -119,6 +115,18 @@ function updateDotConfig (version, options) {
   conf[options.name] = conf[options.name] || {}
   conf[options.name][version] = Date.now()
   config.set(conf)
+}
+
+function getDefaultPackage() {
+  // get package info from parent package
+  var packagePath = path.join(__dirname, '../../package.json')
+  var pkg = {}
+  try {
+    pkg = require(packagePath)
+  } catch (err) {
+    debug('read package %s error: %s', packagePath, err.stack)
+  }
+  return pkg
 }
 
 function red (msg) {
