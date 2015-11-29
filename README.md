@@ -36,6 +36,10 @@ updater({ level: 'major' }).then(execCommands)
 - `interval`: prompt interval, default to `1d`.
 - `updateMessage`: appending update message.
 
+## Notice
+
+Please make sure you pacakge's initial version is bigger than `1.0.0`.
+
 ## License
 
 MIT
