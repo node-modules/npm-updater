@@ -1,7 +1,5 @@
 /*!
  * npm-updater - index.js
- * Copyright(c) Alibaba Group Holding Limited.
- * Author: busi.hyy <busi.hyy@alibaba-inc.com>
  */
 
 'use strict'
