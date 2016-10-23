@@ -2,12 +2,9 @@ npm-updater
 ---------------
 
 [![NPM version][npm-image]][npm-url]
-[![node version][node-image]][node-url]
 
 [npm-image]: https://img.shields.io/npm/v/npm-updater.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/npm-updater
-[node-image]: https://img.shields.io/badge/node.js-%3E=_0.10-green.svg?style=flat-square
-[node-url]: http://nodejs.org/download/
 
 Prompt update of npm package.
 
