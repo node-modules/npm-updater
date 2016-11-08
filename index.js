@@ -1,12 +1,4 @@
-/*!
- * npm-updater - index.js
- */
-
 'use strict'
-
-/**
- * Module dependencies.
- */
 
 var config = require('dotfile-config')('.npm_updater.json')
 var debug = require('debug')('npm-updater')
