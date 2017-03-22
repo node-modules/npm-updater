@@ -1,141 +1,98 @@
-'use strict'
+'use strict';
 
-var config = require('dotfile-config')('.npm_updater.json')
-var debug = require('debug')('npm-updater')
-var fmt = require('util').format
-var ms = require('humanize-ms')
-var urllib = require('urllib')
-var assert = require('assert')
-var semver = require('semver')
-var copy = require('copy-to')
-var path = require('path')
-var fs = require('fs')
-var chalk = require('chalk')
+const path = require('path');
+const debug = require('debug')('npm-updater');
+const chalk = require('chalk');
+const Updater = require('./lib/updater');
+const co = require('co');
+const ms = require('humanize-ms');
+const ConfigStore = require('configstore');
+const store = new ConfigStore('npm_updater', {});
 
-var conf = config.get()
+module.exports = options => {
+  return co(function* () {
+    return yield checkUpdate(options);
+  });
+};
 
-var DEFAULT_OPTIONS = {
-  abort: true,
-  level: 'minor',
-  tag: 'latest',
-  interval: '1d',
-  updateMessage: ''
-}
+/**
+ * check a package lastest version
+ * @param {Object} options - query Object
+ * @param {Object} options.name - package name, default get from parent package.
+ * @param {Object} options.version - package current version, default get from parent package.
+ * @param {Object} [options.package] - pass module's `package.json` object
+ * @param {String} [options.registry] - publishConfig.registry || npm
+ * @param {String} [options.tag] - compare with which tag, default to `latest`.
+ * @param {String} [options.interval] - notify interval, default to 1d.
+ * @param {Boolean} [options.abort] - If remote version changed, should we abort? default to `true`.
+ * @param {String} [options.level] - abort level, default to `minor`.
+ * @param {String} [options.updateMessage] - appending update message.
+ * @param {Function} [options.formatter] - custom format fn, with args { name, version, current, isAbort, options }.
+ * @return {Object} - { name, version, current, type, pkg, options }, type: latest, major, minor, patch, prerelease, build, null
+ */
+function* checkUpdate(options) {
+  const updater = new Updater();
+  /* istanbul ignore next */
+  options.package = options.package || getDefaultPackage();
+  options.abort = options.hasOwnProperty('abort') ? options.abort : true;
+  options.level = options.level || 'minor';
+  options.interval = ms(options.interval || '1d');
+  options.updateMessage = options.updateMessage || '';
 
-var LEVEL_MAP = {
-  major: 2,
-  minor: 1,
-  patch: 0
-}
-
-var DEFAULT_REGISTRY = 'http://registry.npmjs.com'
-
-module.exports = function (customOptions) {
-  customOptions = customOptions || {}
-  var options = {}
-  copy(customOptions).and(DEFAULT_OPTIONS).to(options)
-
-  var pkg = options.package || getDefaultPackage()
-  options.name = options.name || pkg.name
-  options.version = options.version || pkg.version
-  options.registry = options.registry || (pkg.publishConfig && pkg.publishConfig.registry) || DEFAULT_REGISTRY
-
-  debug('get options %j', options)
-  assert(options.name && options.version, '`options.name` and `options.version` are required and can not get from package')
-  options.registry = options.registry.replace(/\/?$/, '/')
-  options.interval = ms(options.interval)
-  return checkUpdate(options)
-}
-
-function checkUpdate (options) {
-  var url = getRemoteUrl(options)
-  debug('request %s', url)
-  return urllib.request(url, {
-    dataType: 'json',
-    followRedirect: true
-  }).then(function (res) {
-    var data = res.data
-    debug('get version %s', data.version)
-    return verifyVersion(data.version, options)
-  }).catch(noop)
-}
-
-function getRemoteUrl (options) {
-  return fmt('%s%s/%s', options.registry, options.name, options.tag)
-}
-
-function verifyVersion (version, options) {
-  if (semver.gtr(version, '^' + options.version)) {
-    return notify(version, 'major', options)
+  // check npm
+  const result = yield updater.check(options);
+  // print
+  result.isAbort = options.abort && compareVersion(result.type, options.level) >= 0;
+  const formatFn = typeof options.formatter === 'function' ? options.formatter : formatter;
+  const msg = formatFn(result);
+  if (result.isAbort) {
+    console.error(msg);
+    process.exit(1);
+  } else {
+    const version = String(result.version).replace(/\./g, '_');
+    const key = `${options.name}.${version}`;
+    debug('notify interval: store[%s] = %j', options.name, store.get(options.name));
+    const last = store.get(key);
+    if (!last || Date.now() - last > options.interval) {
+      store.set(key, Date.now());
+      console.warn(msg);
+    }
   }
+  return result;
+}
 
-  if (semver.gtr(version, '~' + options.version)) {
-    return notify(version, 'minor', options)
+function formatter({ name, version, current, isAbort, options }) {
+  const updateMessage = options.updateMessage || '';
+  if (isAbort) {
+    return chalk.red(`[${name}] new version available: ${current} → ${version}, not compatible, you must update to use this.${updateMessage}`);
   }
-
-  if (semver.gt(version, options.version)) {
-    return notify(version, 'patch', options)
-  }
+  return chalk.yellow(`[${name}] new version available: ${current} → ${version}.${updateMessage}`);
 }
 
-function notify (version, level, options) {
-  debug('notify for remote version: %s, notify level: %s', version, level)
-  level = LEVEL_MAP[level]
-
-  var formatter = typeof options.formatter === 'function' ? options.formatter : formatter;
-
-  if (options.abort && level >= LEVEL_MAP[options.level]) {
-    var msg = formatter({
-      version: version,
-      isAbort: true,
-      options: options,
-    })
-    console.error(chalk.red(msg))
-    process.exit(1)
-  }
-
-  if (!needNotify(version, options)) return debug('skip notify due to interval')
-  updateDotConfig(version, options)
-  var msg = formatter({
-    version: version,
-    isAbort: false,
-    options: options,
-  })
-  return console.warn(chalk.yellow(msg))
+function compareVersion(x, y) {
+  const LEVEL_MAP = {
+    major: 5,
+    minor: 4,
+    patch: 3,
+    prerelease: 2,
+    build: 1,
+    null: 0,
+  };
+  return LEVEL_MAP[x] - LEVEL_MAP[y];
 }
 
-function needNotify (version, options) {
-  if (!conf[options.name] || !conf[options.name][version]) return true
-
-  var last = conf[options.name][version]
-  return Date.now() - last > options.interval
-}
-
-function updateDotConfig (version, options) {
-  conf[options.name] = conf[options.name] || {}
-  conf[options.name][version] = Date.now()
-  config.set(conf)
-}
-
-function formatter(obj) {
-  var version = obj.version;
-  var isAbort = obj.isAbort;
-  var options = obj.options;
-  var name = options.displayName || options.name;
-  var msg = fmt('[%s] new version available: %s → %s %s %s', name, options.version, version, isAbort ? '(not compatible, must update to use this)' : '', options.updateMessage);
-  return msg;
-}
-
+/* istanbul ignore next */
 function getDefaultPackage() {
   // get package info from parent package
-  var packagePath = path.join(__dirname, '../../package.json')
-  var pkg = {}
+  const packagePath = path.join(__dirname, '../../package.json');
+  let pkg = {};
   try {
-    pkg = require(packagePath)
+    pkg = require(packagePath);
   } catch (err) {
-    debug('read package %s error: %s', packagePath, err.stack)
+    debug('read package %s error: %s', packagePath, err.message);
   }
-  return pkg
+  return pkg;
 }
 
-function noop () {}
+module.exports.Updater = Updater;
+

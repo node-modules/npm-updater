@@ -1,18 +1,9 @@
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-
-coverage.html
+logs/
+npm-debug.log
+node_modules/
 coverage/
-cov/
-
-node_modules
-
-dump.rdb
+.idea/
+run/
 .DS_Store
+*.swp
 
-test.js
