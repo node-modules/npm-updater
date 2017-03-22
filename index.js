@@ -82,7 +82,7 @@ function notify (version, level, options) {
   debug('notify for remote version: %s, notify level: %s', version, level)
   level = LEVEL_MAP[level]
 
-  var formatter = typeof options.formatFn === 'function' ? options.formatter : formatter;
+  var formatter = typeof options.formatter === 'function' ? options.formatter : formatter;
 
   if (options.abort && level >= LEVEL_MAP[options.level]) {
     var msg = formatter({
