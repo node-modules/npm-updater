@@ -36,6 +36,7 @@ updater({
 - `level`: abort level, default to `minor`.
 - `interval`: prompt interval, default to `1d`.
 - `updateMessage`: appending update message.
+- `formatter`: custom format fn, with args `{ version, isAbort, options }`
 
 ## Notice
 
