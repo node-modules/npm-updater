@@ -10,6 +10,7 @@ var semver = require('semver')
 var copy = require('copy-to')
 var path = require('path')
 var fs = require('fs')
+var chalk = require('chalk')
 
 var conf = config.get()
 
@@ -79,21 +80,28 @@ function verifyVersion (version, options) {
 
 function notify (version, level, options) {
   debug('notify for remote version: %s, notify level: %s', version, level)
-
   level = LEVEL_MAP[level]
 
+  var formatter = typeof options.formatFn === 'function' ? options.formatter : formatter;
+
   if (options.abort && level >= LEVEL_MAP[options.level]) {
-    var msg = fmt('[%s版本升级提示] 最新版本为 %s，与本地版本 %s 不兼容，请升级后使用。\n%s',
-      options.name, version, options.version, options.updateMessage)
-    console.error(red(msg))
+    var msg = formatter({
+      version: version,
+      isAbort: true,
+      options: options,
+    })
+    console.error(chalk.red(msg))
     process.exit(1)
   }
 
-  if (!needNotify(version, options)) return debug('间隔时间内，不需要提示')
+  if (!needNotify(version, options)) return debug('skip notify due to interval')
   updateDotConfig(version, options)
-  var msg = fmt('[%s 版本升级提示] 最新版本为 %s，本地版本为 %s，请尽快升级到最新版本。\n%s',
-    options.name, version, options.version, options.updateMessage)
-  return console.warn(yellow(msg))
+  var msg = formatter({
+    version: version,
+    isAbort: false,
+    options: options,
+  })
+  return console.warn(chalk.yellow(msg))
 }
 
 function needNotify (version, options) {
@@ -109,6 +117,15 @@ function updateDotConfig (version, options) {
   config.set(conf)
 }
 
+function formatter(obj) {
+  var version = obj.version;
+  var isAbort = obj.isAbort;
+  var options = obj.options;
+  var name = options.displayName || options.name;
+  var msg = fmt('[%s] new version available: %s → %s %s %s', name, options.version, version, isAbort ? '(not compatible, must update to use this)' : '', options.updateMessage);
+  return msg;
+}
+
 function getDefaultPackage() {
   // get package info from parent package
   var packagePath = path.join(__dirname, '../../package.json')
@@ -119,14 +136,6 @@ function getDefaultPackage() {
     debug('read package %s error: %s', packagePath, err.stack)
   }
   return pkg
-}
-
-function red (msg) {
-  return fmt('\u001b[31m%s\u001b[39m', msg)
-}
-
-function yellow (msg) {
-  return fmt('\u001b[33m%s\u001b[39m', msg)
 }
 
 function noop () {}
