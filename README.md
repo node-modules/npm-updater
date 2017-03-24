@@ -1,9 +1,24 @@
 # npm-updater
 
 [![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![Test coverage][codecov-image]][codecov-url]
+[![David deps][david-image]][david-url]
+[![Known Vulnerabilities][snyk-image]][snyk-url]
+[![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/npm-updater.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/npm-updater
+[travis-image]: https://img.shields.io/travis/node-modules/npm-updater.svg?style=flat-square
+[travis-url]: https://travis-ci.org/node-modules/npm-updater
+[codecov-image]: https://codecov.io/gh/node-modules/npm-updater/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/node-modules/npm-updater
+[david-image]: https://img.shields.io/david/node-modules/npm-updater.svg?style=flat-square
+[david-url]: https://david-dm.org/node-modules/npm-updater
+[snyk-image]: https://snyk.io/test/npm/npm-updater/badge.svg?style=flat-square
+[snyk-url]: https://snyk.io/test/npm/npm-updater
+[download-image]: https://img.shields.io/npm/dm/npm-updater.svg?style=flat-square
+[download-url]: https://npmjs.org/package/npm-updater
 
 Check update of npm package.
 
