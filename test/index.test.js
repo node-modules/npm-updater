@@ -55,12 +55,12 @@ describe('test/index.test.js', () => {
   });
 
   it('should not notify at interval ', function* () {
-    yield fork({ name: 'npm-updater', version: '2.0.0' })
+    yield fork({ name: 'npm-updater', version: '2.0.0', abort: false })
       // .debug()
       .expect('stderr', /new version available: 2.0.0.*?\d+\.\d+\.\d+/)
       .end();
 
-    yield fork({ name: 'npm-updater', version: '2.0.0' }, { cache: true })
+    yield fork({ name: 'npm-updater', version: '2.0.0', abort: false }, { cache: true })
       // .debug()
       .expect('stout', '')
       .expect('stderr', '')
