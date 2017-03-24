@@ -1,7 +1,6 @@
 'use strict';
 
 const assert = require('assert');
-const mock = require('egg-mock');
 const Updater = require('../../lib/updater');
 
 describe('test/lib/updater.test.js', () => {
@@ -9,8 +8,6 @@ describe('test/lib/updater.test.js', () => {
   before(() => {
     updater = new Updater();
   });
-
-  afterEach(mock.restore);
 
   it('should check update major', function* () {
     const result = yield updater.check({

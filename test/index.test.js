@@ -1,13 +1,12 @@
 'use strict';
 
-const mock = require('egg-mock');
 const coffee = require('coffee');
 const path = require('path');
 
 describe('test/index.test.js', () => {
-  afterEach(mock.restore);
 
-  function fork(options, meta = {}) {
+  function fork(options, meta) {
+    meta = meta || {};
     const bin = meta.bin || path.join(__dirname, './fixtures/my-bin');
     const cwd = path.join(__dirname, './fixtures');
 

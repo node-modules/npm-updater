@@ -61,7 +61,12 @@ function* checkUpdate(options) {
   return result;
 }
 
-function formatter({ name, version, current, isAbort, options }) {
+function formatter(args) {
+  const name = args.name;
+  const version = args.version;
+  const current = args.current;
+  const isAbort = args.isAbort;
+  const options = args.options;
   const updateMessage = options.updateMessage || '';
   if (isAbort) {
     return chalk.red(`[${name}] new version available: ${current} → ${version}, not compatible, you must update to use this.${updateMessage}`);

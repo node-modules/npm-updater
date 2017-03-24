@@ -4,7 +4,11 @@
 
 const options = JSON.parse(process.argv[2]);
 if (options.customFormatter) {
-  options.formatter = ({ name, version, current, isAbort }) => {
+  options.formatter = args => {
+    const name = args.name;
+    const version = args.version;
+    const current = args.current;
+    const isAbort = args.isAbort;
     return `
       name: ${name},
       version: ${version},
