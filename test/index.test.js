@@ -73,4 +73,19 @@ describe('test/index.test.js', () => {
       .expect('code', 1)
       .end();
   });
+
+  it('should not notify when versions are identical or the remote is lower than the local', function* () {
+    const pkg = require('../package.json');
+    yield fork({ name: 'npm-updater', version: pkg.version })
+      // .debug()
+      .expect('stdout', '')
+      .expect('stderr', '')
+      .end();
+
+    yield fork({ name: 'npm-updater', version: '99.0.0' })
+      // .debug()
+      .expect('stdout', '')
+      .expect('stderr', '')
+      .end();
+  });
 });
