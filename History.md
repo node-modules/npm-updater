@@ -1,4 +1,9 @@
 
+3.0.1 / 2017-05-03
+==================
+
+  * fix: should not notify when versions are identical or the remote is lower than the local (#6)
+
 3.0.0 / 2017-03-24
 ==================
 
