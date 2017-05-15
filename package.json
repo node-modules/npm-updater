@@ -1,6 +1,6 @@
 {
   "name": "npm-updater",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "check npm package update",
   "dependencies": {
     "chalk": "^1.1.3",
