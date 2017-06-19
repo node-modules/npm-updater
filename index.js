@@ -41,6 +41,8 @@ function* checkUpdate(options) {
 
   // check npm
   const result = yield updater.check(options);
+  if (!result) return undefined;
+
   const checkFlag = checkTimestamp(result, options);
   result.isAbort = options.abort && compareVersion(result.type, options.level) >= 0;
 
@@ -61,9 +63,6 @@ function* checkUpdate(options) {
 }
 
 function checkTimestamp(result, options) {
-  /* istanbul ignore if */
-  if (!result) return false;
-
   const version = String(result.version).replace(/\./g, '_');
   const key = `${options.name}.${version}`;
   debug('notify interval: store[%s] = %j', options.name, store.get(options.name));

@@ -88,4 +88,12 @@ describe('test/index.test.js', () => {
       .expect('stderr', '')
       .end();
   });
+
+  it('should ignore when network error', function* () {
+    yield fork({ name: 'npm-updater', version: '2.0.0', registry: 'http://not-exist' })
+      // .debug()
+      .expect('stdout', '')
+      .expect('stderr', /Got error when check update: getaddrinfo ENOTFOUND/)
+      .end();
+  });
 });
