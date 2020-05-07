@@ -9,7 +9,8 @@
     "debug": "^2.6.3",
     "humanize-ms": "^1.2.0",
     "semver-diff": "^2.1.0",
-    "urllib": "^2.21.2"
+    "urllib": "^2.21.2",
+    "snyk": "^1.230.5"
   },
   "devDependencies": {
     "autod": "^2.8.0",
@@ -38,7 +39,9 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
-    "autod": "autod"
+    "autod": "autod",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "ci": {
     "version": "4, 6, 7"
@@ -48,5 +51,6 @@
     "url": "git@github.com:node-modules/npm-updater"
   },
   "author": "dead-horse <dead_horse@qq.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
