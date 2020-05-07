@@ -62,7 +62,7 @@ describe('test/index.test.js', () => {
 
     yield fork({ name: 'npm-updater', version: '2.0.0', abort: false }, { cache: true })
       // .debug()
-      .expect('stout', '')
+      .expect('stdout', '')
       .expect('stderr', '')
       .end();
 
