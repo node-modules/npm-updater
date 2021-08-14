@@ -63,7 +63,7 @@ updater({
 
  ## Notice
 
-Please make sure you pacakge's initial version is bigger than `1.0.0`.
+Please make sure you packages's initial version is bigger than `1.0.0`.
 
 ## License
 
