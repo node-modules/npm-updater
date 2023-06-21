@@ -8,7 +8,7 @@
     "configstore": "^3.0.0",
     "debug": "^2.6.3",
     "humanize-ms": "^1.2.0",
-    "semver-diff": "^2.1.0",
+    "semver-diff": "^4.0.0",
     "urllib": "^2.21.2"
   },
   "devDependencies": {
