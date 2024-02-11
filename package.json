@@ -9,7 +9,7 @@
     "debug": "^2.6.3",
     "humanize-ms": "^1.2.0",
     "semver-diff": "^2.1.0",
-    "urllib": "^2.21.2"
+    "urllib": "^3.0.0"
   },
   "devDependencies": {
     "autod": "^2.8.0",
